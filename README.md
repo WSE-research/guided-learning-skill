@@ -2,7 +2,7 @@
 
 A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that turns your Obsidian vault into a structured learning environment. It runs interactive sessions through your literature collection using a **spiral curriculum** — three passes of increasing depth, with spaced recall, comprehension checks, and auto-generated interactive HTML visualizations.
 
-Built for researchers, PhD students, and anyone who learns from academic papers and wants to actually retain what they read.
+The skill supports three domain modes — research, professional, and self-study — so it works for academics, industry professionals, and independent learners alike. Built for anyone who learns from structured material and wants to actually retain what they read.
 
 ## What It Does
 
@@ -24,6 +24,16 @@ The spiral curriculum means you visit each concept up to three times:
 | **Pass 1: Overview** | "What is this and why does it matter?" | ~10-20 min |
 | **Pass 2: Working Understanding** | "How does it work? Can I evaluate and apply it?" | ~20-30 min |
 | **Pass 3: Fluency** | "Can I write and argue with this in a paper?" | ~30-45 min |
+
+## Domain Modes
+
+| Mode | Best for | Comprehension checks sound like... |
+|------|----------|-----------------------------------|
+| `research` (default) | PhD students, postdocs, researchers | "Write the Related Work sentence", "Reviewer 2 says..." |
+| `professional` | Industry professionals, L&D, consultants | "Brief your manager", "Write the decision memo" |
+| `self-study` | Independent learners, career changers | "Explain at dinner", "Write a blog post opener" |
+
+Set `domain_mode` in the Configuration section of `SKILL.md`.
 
 ## Prerequisites
 
@@ -134,6 +144,7 @@ After setup, your vault should look like this:
 your-vault/
 ├── SKILLS/
 │   └── guided-learning/
+│       ├── PEDAGOGY.md       ← the method, tool-independent (read this first if you want to understand the approach)
 │       ├── SKILL.md          ← the skill definition
 │       ├── CHANGELOG.md
 │       ├── logs/             ← execution logs (auto-generated)
@@ -189,6 +200,16 @@ These open directly in Obsidian or any browser. The dark-theme design system (`i
 
 The skill tracks recurring correction types across sessions using six tags (`implication-gap`, `terminology-confusion`, `math-gap`, `scope-creep`, `shallow-framing`, `connection-blind`). Every 5 sessions, it reviews the pattern and adapts its teaching style if any tag is trending.
 
+## Using Without Obsidian
+
+The pedagogical method is tool-agnostic. Read `PEDAGOGY.md` for the full framework — spiral curriculum, spaced recall, comprehension check design, and struggle pattern tracking — independent of any specific tool.
+
+`SKILL.md` automates this method for Claude Code + Obsidian, but the approach works with any note system. If you use a different setup:
+
+- **Linking syntax:** Replace `[[wikilinks]]` with whatever your note system uses (e.g., `[text](path)` for standard Markdown).
+- **Interactive build:** Skip `build.sh` (it inlines CSS for Obsidian compatibility). Store generated HTML files as standalone files anywhere and open them in a browser.
+- **Recall queue:** The spaced recall tracker is just a markdown table with concept names, dates, and intervals. It works in any text editor.
+
 ## Customization
 
 ### Adapting to Your Domain
@@ -233,4 +254,4 @@ MIT. See [LICENSE](LICENSE).
 
 ## Credits
 
-Developed by [Jonas Gwozdz](https://github.com/jonasgwozdz) at the [WSE Research Group](https://github.com/wse-research), HTWK Leipzig. Born from the need to actually remember what you read during a PhD.
+Developed by [Jonas Gwozdz](https://github.com/jonasgwozdz) at the [WSE Research Group](https://github.com/wse-research), HTWK Leipzig. Born from the need to actually remember what you read.

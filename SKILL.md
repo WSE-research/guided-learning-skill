@@ -48,7 +48,35 @@ skill_logs_dir: SKILLS/guided-learning/logs/
 # Interactive HTML
 css_file: learning/interactives/interactive.css
 build_script: learning/interactives/build.sh
+
+# Domain mode — controls the framing of comprehension checks, connection prompts,
+# and application exercises. Does NOT change the core explanation approach.
+domain_mode: research  # Options: research, professional, self-study
 ```
+
+## Domain Modes
+
+The skill supports three domain modes that adapt session framing — comprehension checks, connection mapping prompts, and application context — to the learner's situation. The core explanation approach (Phase 1) stays the same across all modes; what changes is the *lens* through which the learner is asked to demonstrate and apply understanding.
+
+Set `domain_mode` in the configuration above. The default is `research`.
+
+### research (default)
+
+Academic context: papers, Related Work, reviewer simulation, dissertation argument maps, advisor pitches. Best for PhD students, postdocs, and researchers working through academic literature.
+
+Comprehension checks ask the learner to pitch at a conference, defend to a reviewer, write Related Work sentences, or connect to hypotheses. Connection mapping prompts reference dissertation argument maps and academic discourse.
+
+### professional
+
+Workplace/industry context: stakeholder presentations, decision memos, team explanations, project applications. Best for professionals learning domain knowledge for their work (e.g., learning data science for product management, learning education theory for L&D roles).
+
+Comprehension checks ask the learner to brief their manager, defend a design decision to a skeptical colleague, write risk assessments, or connect to current projects. Connection mapping prompts reference team knowledge architectures and decision dependencies.
+
+### self-study
+
+Personal learning context: teaching analogies, blog post drafts, practical projects, self-assessment. Best for independent learners working through a topic systematically.
+
+Comprehension checks ask the learner to explain at a dinner table, draft blog post openers, respond to Twitter skeptics, or connect to portfolio projects. Connection mapping prompts reference personal concept maps and learning trajectories.
 
 ## When to Use
 
@@ -187,21 +215,27 @@ The learner understands the concept and its mechanism. Now they need to wield it
 1. **Announce the interactive** and invite the learner to explore it freely.
 2. **After exploring**, ask the comprehension check question — pick ONE from the pool below. **Do not reuse the same format two sessions in a row.** Track the last format used in the execution log (`check_format` field).
 
-**Comprehension check pool — pick by pass and variety:**
+**Comprehension check pool — pick by pass, domain mode, and variety:**
+
+Use the pool matching the configured `domain_mode`. Checks marked "(shared)" are identical across all modes. **Do not reuse the same format two sessions in a row.**
+
+---
+
+#### `research` mode (default)
 
 **Pass 1 (any of these):**
 - **Conference pitch**: "Explain this to a fellow researcher at a poster session."
 - **Elevator pitch**: "You have 30 seconds — sell me on why this concept matters for your research."
-- **Predict the outcome**: "If [specific variable] changes from X to Y, what happens and why?"
-- **Spot the flaw**: Present a deliberately wrong one-sentence summary. "What's wrong with this claim: '[flawed statement]'?"
-- **Analogy check**: "Come up with your own analogy for this concept — different from the one I used."
+- **Predict the outcome**: "If [specific variable] changes from X to Y, what happens and why?" *(shared)*
+- **Spot the flaw**: Present a deliberately wrong one-sentence summary. "What's wrong with this claim: '[flawed statement]'?" *(shared)*
+- **Analogy check**: "Come up with your own analogy for this concept — different from the one I used." *(shared)*
 - **What breaks?**: "If we ignored this concept entirely in your system, what would go wrong?"
 
 **Pass 2 (any of these):**
 - **Advisor pitch**: "How would you explain this mechanism to your advisor?"
-- **Two-concept bridge**: "How does this connect to [[previously-learned-concept]]? What does one give you that the other doesn't?"
+- **Two-concept bridge**: "How does this connect to [[previously-learned-concept]]? What does one give you that the other doesn't?" *(shared)*
 - **Design decision**: "You're building your system — where exactly does this concept change your design, and how?"
-- **Devil's advocate**: "I think [opposing claim]. Convince me I'm wrong using this concept."
+- **Devil's advocate**: "I think [opposing claim]. Convince me I'm wrong using this concept." *(shared)*
 - **Evidence check**: "What's the strongest piece of evidence for this claim, and what's its biggest limitation?"
 - **Predict the failure**: "Under what conditions would this approach fail? Give a concrete example from your domain."
 
@@ -209,9 +243,65 @@ The learner understands the concept and its mechanism. Now they need to wield it
 - **Related Work sentence**: "Write the one sentence you'd put in a Related Work section about this."
 - **Reviewer simulation**: "I'm Reviewer 2 and I say your use of this concept is superficial. Defend it."
 - **Hypothesis link**: "Which of your hypotheses does this concept support, and how would you cite it as evidence?"
-- **Counter-argument**: "Name one paper or concept that could be used to argue *against* this claim."
+- **Counter-argument**: "Name one paper or concept that could be used to argue *against* this claim." *(shared)*
 - **Teach it**: "Explain this to a student who has never read the paper. They need to understand it well enough to implement it."
 - **Write the limitation**: "Write the 2-sentence limitation paragraph for this concept as it applies to your system."
+
+---
+
+#### `professional` mode
+
+**Pass 1 (any of these):**
+- **Team standup**: "Explain this to your team in 30 seconds at standup."
+- **Stakeholder pitch**: "Your VP asks why this matters for the product. What do you say?"
+- **Predict the outcome**: "If [specific variable] changes from X to Y, what happens and why?" *(shared)*
+- **Spot the flaw**: Present a deliberately wrong one-sentence summary. "What's wrong with this claim: '[flawed statement]'?" *(shared)*
+- **Analogy check**: "Come up with your own analogy for this concept — different from the one I used." *(shared)*
+- **What breaks?**: "If your team ignored this concept, what would go wrong in production?"
+
+**Pass 2 (any of these):**
+- **Manager briefing**: "Write a one-paragraph briefing for your manager on this."
+- **Two-concept bridge**: "How does this connect to [[previously-learned-concept]]? What does one give you that the other doesn't?" *(shared)*
+- **Design decision**: "You're architecting the system — where does this change your design?"
+- **Devil's advocate**: "I think [opposing claim]. Convince me I'm wrong using this concept." *(shared)*
+- **Cost-benefit**: "What's the cost of implementing this vs. the cost of not implementing it?"
+- **Predict the failure**: "Under what conditions would this fail in a real deployment?"
+
+**Pass 3 (any of these):**
+- **Decision memo**: "Write the one-paragraph recommendation for the decision doc."
+- **Pushback simulation**: "Your skeptical colleague says this is over-engineered. Defend it."
+- **Project link**: "Which current project would benefit most from this, and how?"
+- **Counter-argument**: "Name one paper or concept that could be used to argue *against* this claim." *(shared)*
+- **Teach it**: "Explain this to a new team member who starts Monday."
+- **Write the risk**: "Write the 2-sentence risk assessment for NOT applying this."
+
+---
+
+#### `self-study` mode
+
+**Pass 1 (any of these):**
+- **Dinner table**: "Explain this to a curious friend over dinner."
+- **Elevator pitch**: "In one sentence, why should anyone care about this?"
+- **Predict the outcome**: "If [specific variable] changes from X to Y, what happens and why?" *(shared)*
+- **Spot the flaw**: Present a deliberately wrong one-sentence summary. "What's wrong with this claim: '[flawed statement]'?" *(shared)*
+- **Analogy check**: "Come up with your own analogy for this concept — different from the one I used." *(shared)*
+- **What breaks?**: "If this concept didn't exist, what problems would remain unsolved?"
+
+**Pass 2 (any of these):**
+- **Teach a friend**: "How would you explain the mechanism to someone smart but unfamiliar?"
+- **Two-concept bridge**: "How does this connect to [[previously-learned-concept]]? What does one give you that the other doesn't?" *(shared)*
+- **Build something**: "If you were building a project using this, what's the first thing you'd implement?"
+- **Devil's advocate**: "I think [opposing claim]. Convince me I'm wrong using this concept." *(shared)*
+- **Evidence check**: "What's the strongest piece of evidence for this claim, and what's its biggest limitation?"
+- **Edge case**: "What's the weirdest or most extreme scenario where this still applies?"
+
+**Pass 3 (any of these):**
+- **Blog post opener**: "Write the opening paragraph of a blog post explaining this."
+- **Skeptic response**: "Someone on Twitter says this concept is overrated. Draft your reply."
+- **Portfolio link**: "How would you demonstrate understanding of this in a portfolio project?"
+- **Counter-argument**: "Name one paper or concept that could be used to argue *against* this claim." *(shared)*
+- **Teach it**: "Explain this to a motivated beginner. They want to understand, not just memorize."
+- **Write the caveat**: "Write the 2-sentence 'but here's the catch' paragraph."
 
 If gaps appear, re-explain those parts. Don't move on until the core idea clicks.
 
@@ -258,7 +348,12 @@ Prefer A for concepts that involve numbers, processes, or tradeoffs. Use B when 
 
 **Pass 2:** "How does this concept change or strengthen your understanding of [[specific-previously-learned-concept]]?" Pick a specific concept from an earlier cluster that relates.
 
-**Pass 3:** "If you were drawing the argument map for your dissertation, where does this concept sit? What does it support, and what supports it?" The learner should identify at least 2 upstream and 1 downstream connection.
+**Pass 3** (use the variant matching the configured `domain_mode`):
+- **research:** "If you were drawing the argument map for your dissertation, where does this concept sit? What does it support, and what supports it?"
+- **professional:** "If you were mapping the knowledge architecture for your team, where does this concept sit? What decisions does it inform, and what prerequisites does it need?"
+- **self-study:** "If you were drawing a concept map of everything you've learned in this area, where does this sit? What supports it, and what does it enable?"
+
+The learner should identify at least 2 upstream and 1 downstream connection.
 
 If new connections are discovered that aren't in the concept notes, update the wikilinks in the relevant concept files.
 
@@ -446,7 +541,7 @@ concepts_covered:
   - "<concept-2>"
 complexity: "<light|medium|heavy>"
 application_method: "<html-interactive|scenario|writing|connection-mapping>"
-check_format: "<conference-pitch|elevator-pitch|predict-outcome|spot-flaw|analogy-check|what-breaks|advisor-pitch|two-concept-bridge|design-decision|devils-advocate|evidence-check|predict-failure|related-work|reviewer-sim|hypothesis-link|counter-argument|teach-it|write-limitation>"
+check_format: "<conference-pitch|elevator-pitch|predict-outcome|spot-flaw|analogy-check|what-breaks|advisor-pitch|two-concept-bridge|design-decision|devils-advocate|evidence-check|predict-failure|related-work|reviewer-sim|hypothesis-link|counter-argument|teach-it|write-limitation|team-standup|stakeholder-pitch|manager-briefing|cost-benefit|decision-memo|pushback-sim|project-link|write-risk|dinner-table|teach-a-friend|build-something|edge-case|blog-post-opener|skeptic-response|portfolio-link|write-caveat>"
 artifacts_created:
   - "<path to interactive HTML or other output>"
 comprehension_check: "<passed|partial|needs-revisit>"
