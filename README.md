@@ -1,12 +1,24 @@
 # Guided Learning Skill
 
-A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that turns your Obsidian vault into a structured learning environment. It runs interactive sessions through your literature collection using a **spiral curriculum** — three passes of increasing depth, with spaced recall, comprehension checks, and auto-generated interactive HTML visualizations.
+A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that turns any markdown-based knowledge vault into a structured learning environment. It runs interactive sessions using a **spiral curriculum** — three passes of increasing depth, with spaced recall, comprehension checks, and auto-generated interactive HTML visualizations.
 
-The skill supports three domain modes — research, professional, and self-study — so it works for academics, industry professionals, and independent learners alike. Built for anyone who learns from structured material and wants to actually retain what they read.
+Three ways to start: name a topic and the skill **bootstraps a full roadmap** from scratch, drop a **PDF or URL** and learn from it immediately, or continue an **existing roadmap**. Three domain modes (research, professional, self-study) are detected automatically. Built for anyone who wants to actually retain what they read.
 
 ## What It Does
 
-When you say `/guided-learning` (or just "teach me the next concept"), the skill:
+**From zero to learning in under 5 minutes:**
+
+```
+You: "I want to learn about reinforcement learning"
+Skill: creates 15 concept notes, a dependency-ordered roadmap, recall queue → starts teaching
+```
+
+```
+You: "teach me this paper" [drops PDF]
+Skill: extracts 5 key concepts → explains each with comprehension checks → offers to add to roadmap
+```
+
+**Or continue a structured roadmap:**
 
 1. **Picks the next concept** from your learning roadmap
 2. **Checks recall** of previously learned concepts (spaced repetition: 3d → 7d → 21d)
@@ -38,103 +50,66 @@ The skill detects the right mode automatically from your concept notes and roadm
 ## Prerequisites
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (CLI, desktop, or IDE extension)
-- An [Obsidian](https://obsidian.md) vault (or any markdown-based knowledge vault)
-- Concept notes backed by literature (the skill reads these to build explanations)
+- A folder for your notes (Obsidian vault, markdown folder, or any text-based system)
+- That's it. The skill creates everything else.
 
 ## Quick Start
 
-### 1. Copy the skill into your vault
+### The fast way (no setup)
 
 ```bash
-# Clone this repo
+# 1. Clone the repo
 git clone https://github.com/wse-research/guided-learning-skill.git
 
-# Copy into your vault's skill directory
-cp -r guided-learning-skill/SKILL.md YOUR_VAULT/SKILLS/guided-learning/SKILL.md
-cp -r guided-learning-skill/CHANGELOG.md YOUR_VAULT/SKILLS/guided-learning/CHANGELOG.md
-cp -r guided-learning-skill/references/ YOUR_VAULT/SKILLS/guided-learning/references/
-mkdir -p YOUR_VAULT/SKILLS/guided-learning/logs/
-```
+# 2. Copy the skill into your vault
+mkdir -p YOUR_VAULT/SKILLS/guided-learning/logs
+cp guided-learning-skill/SKILL.md YOUR_VAULT/SKILLS/guided-learning/
+cp guided-learning-skill/CHANGELOG.md YOUR_VAULT/SKILLS/guided-learning/
 
-### 2. Set up the interactive system (optional but recommended)
-
-The skill generates interactive HTML visualizations for quantitative concepts. These need a shared CSS design system and a build script that inlines the CSS for Obsidian compatibility.
-
-```bash
-# Copy the design system
-mkdir -p YOUR_VAULT/learning/interactives/
+# 3. Copy the interactive design system (optional but recommended)
+mkdir -p YOUR_VAULT/learning/interactives
 cp guided-learning-skill/interactives/interactive.css YOUR_VAULT/learning/interactives/
 cp guided-learning-skill/interactives/build.sh YOUR_VAULT/learning/interactives/
 chmod +x YOUR_VAULT/learning/interactives/build.sh
 ```
 
-### 3. Create your learning roadmap
+Then open Claude Code in your vault and say:
 
-The roadmap is a markdown file that lists concepts grouped by cluster, ordered by dependency. The skill reads this to know what to teach next.
-
-Copy the example and adapt it to your domain:
-
-```bash
-cp guided-learning-skill/examples/learning-roadmap.md YOUR_VAULT/learning/learning-roadmap.md
+```
+"I want to learn about [your topic]"
 ```
 
-See [examples/learning-roadmap.md](examples/learning-roadmap.md) for the format. The key structure:
+The skill bootstraps a learning roadmap with 10-20 concepts, creates stub concept notes, sets up the recall queue, and starts teaching. No manual roadmap creation needed.
 
-```markdown
-## Pass 1: Overview
+Or drop a source directly:
 
-### Cluster 1: Foundations
-- [ ] [[concept-a]]
-- [ ] [[concept-b]]
-
-### Cluster 2: Core Methods
-- [ ] [[concept-c]]   ← depends on concept-a
-- [ ] [[concept-d]]
+```
+"Teach me this paper: /path/to/paper.pdf"
+"Explain this: https://example.com/article"
 ```
 
-### 4. Create concept notes
+The skill extracts key concepts from the source, teaches them with comprehension checks, and offers to add them to your roadmap for spaced recall.
 
-Each concept in the roadmap should have a corresponding note in `concepts/`. The skill reads these to build explanations. Minimal format:
+### The manual way (full control)
 
-```markdown
----
-title: Your Concept Name
-type: concept
-sources:
-  - "[[literature/papers/author-year/summary]]"
-tags:
-  - your-domain
----
+If you prefer to build your own roadmap and concept notes from scratch, see `examples/` for templates:
 
-# Your Concept Name
+- `examples/learning-roadmap.md` — roadmap format with clusters and passes
+- `examples/concept-note.md` — concept note format with core claim, evidence, implications
+- `examples/recall-queue.md` — empty recall queue
+- `examples/session-protocol.md` — what a session log looks like
 
-## Core Claim
-One-sentence statement of what this concept says.
+Copy these into your vault, fill them in, and say `/guided-learning` or "continue my roadmap".
 
-## Evidence
-- Key finding from source paper (citation)
+### Invoking the skill
 
-## Implications
-- What this means for your research
-```
-
-### 5. Create the recall queue
-
-```bash
-cp guided-learning-skill/examples/recall-queue.md YOUR_VAULT/learning/recall-queue.md
-```
-
-This starts empty and fills up as you complete sessions.
-
-### 6. Register the skill in Claude Code
-
-Add the skill trigger to your Claude Code configuration. If you're using the [Superpowers](https://github.com/anthropics/claude-code) skill system, the skill description in `SKILL.md` handles auto-triggering. Otherwise, you can invoke it directly:
+If you're using a skill system (e.g., Superpowers), the skill description handles auto-triggering. Otherwise invoke directly:
 
 ```
 /guided-learning
 ```
 
-Or just say: "teach me the next concept", "let's do a learning session", "continue my roadmap".
+Or just say: "teach me the next concept", "let's do a learning session", "I want to learn about X", "explain this paper".
 
 ## Vault Structure
 

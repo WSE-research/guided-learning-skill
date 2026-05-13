@@ -2,11 +2,13 @@
 name: guided-learning
 version: 3.0.0
 description: >
-  Run structured learning sessions through a literature-backed concept collection using a spiral
-  curriculum. Each session covers 1-3 concepts with adaptive explanations, comprehension checks,
-  interactive HTML visualizations, and spaced recall. Use when the learner wants to study, learn,
-  continue their learning roadmap, work through specific concepts, review what they've learned,
-  get quizzed, or asks to be taught or have something explained from their research domain.
+  Run structured learning sessions using a spiral curriculum. Each session covers 1-3 concepts with
+  adaptive explanations, comprehension checks, interactive HTML visualizations, and spaced recall.
+  Supports three entry points: (1) continue an existing learning roadmap, (2) name a topic to
+  bootstrap a roadmap from scratch, or (3) provide a PDF/URL/text to learn from immediately.
+  Use when the learner wants to study, learn, continue their roadmap, work through concepts,
+  review what they've learned, get quizzed, understand a paper or article, or start learning
+  a new topic from zero.
 ---
 
 # Guided Learning — Spiral Curriculum Sessions
@@ -17,19 +19,18 @@ Run structured learning sessions through a literature-backed concept collection 
 
 ## Prerequisites
 
-This skill expects the following vault structure (paths are configurable in the **Configuration** section below):
+The skill uses the following vault structure. **All of these are created automatically** by the bootstrapper if they don't exist — you don't need to set anything up manually.
 
-| Path | Purpose |
-|------|---------|
-| `learning/learning-roadmap.md` | Ordered list of concepts grouped by cluster and pass |
-| `learning/recall-queue.md` | Spaced repetition tracker |
-| `learning/protocols/` | Session protocols (learning journal) |
-| `learning/interactives/` | Generated HTML visualizations |
-| `concepts/` | Atomic concept notes (Zettelkasten-style) |
-| `literature/papers/` | Paper summaries that back the concepts |
-| `research/glossary.md` | Domain glossary |
+| Path | Purpose | Created by |
+|------|---------|------------|
+| `learning/learning-roadmap.md` | Ordered list of concepts grouped by cluster and pass | Bootstrapper or manual |
+| `learning/recall-queue.md` | Spaced repetition tracker | Bootstrapper or first session |
+| `learning/protocols/` | Session protocols (learning journal) | First session |
+| `learning/interactives/` | Generated HTML visualizations | First interactive build |
+| `concepts/` | Atomic concept notes (Zettelkasten-style) | Bootstrapper, teach-from-source, or manual |
+| `research/glossary.md` | Domain glossary | First session |
 
-See the `examples/` directory for starter templates.
+For manual setup, see the `examples/` directory for starter templates.
 
 ## Configuration
 
@@ -87,6 +88,8 @@ Comprehension checks ask the learner to explain at a dinner table, draft blog po
 - The learner asks to continue their learning roadmap
 - The learner references a specific concept they want to understand
 - The learner asks for an interactive explanation of something
+- **The learner names a topic they want to learn** (no existing roadmap required — triggers bootstrapper)
+- **The learner provides a PDF, URL, or paste** they want to understand (triggers teach-from-source mode)
 
 ## Input
 
@@ -95,6 +98,99 @@ One of:
 - **Cluster name** → work on the next item in that cluster
 - **Concept name** → jump to that specific concept
 - **"continue"** → resume from last session
+- **A topic** (e.g., "I want to learn Bayesian statistics") → triggers the **Bootstrapper** (see below)
+- **A PDF path, URL, or pasted text** → triggers **Teach-from-Source** mode (see below)
+
+---
+
+## Bootstrapper — Zero-to-First-Session in 5 Minutes
+
+When the learner names a topic but has no roadmap, concept notes, or vault structure yet, the skill bootstraps everything needed to start learning immediately.
+
+### When it triggers
+
+- The learning roadmap does not exist or is empty
+- The learner provides a topic rather than a concept name (e.g., "I want to learn about reinforcement learning", "teach me UX research methods", "help me understand transformer architectures")
+
+### What it does
+
+1. **Ask one clarifying question**: "What's your goal with [topic]? Are you learning this for research, for work, or personal interest?" This also sets the domain mode.
+
+2. **Generate a starter roadmap** with 10-20 concepts organized into 3-5 clusters:
+   - Use the learner's stated goal to pick relevant sub-topics
+   - Order clusters by dependency (foundations first)
+   - Each concept gets one line in the roadmap checklist
+   - Write the roadmap to `learning/learning-roadmap.md`
+
+3. **Generate stub concept notes** for each concept in the roadmap:
+   - Create one file per concept in `concepts/`
+   - Each stub has: title, a 2-3 sentence core claim (from the agent's knowledge), empty Evidence and Implications sections, and placeholder source links
+   - These are starting points, not finished notes — the learner (or other skills like literature-intake) can enrich them later
+
+4. **Create the recall queue** (empty table) and the `learning/protocols/` directory
+
+5. **Create the glossary** with a header and the first few key terms from the topic
+
+6. **Announce what was created**: List the clusters, concept count, and invite the learner to review and adjust before starting. Show the roadmap structure briefly.
+
+7. **Offer to start immediately**: "Your roadmap has [N] concepts in [M] clusters. Want to start with the first one, or review and adjust the roadmap first?"
+
+### Quality guidelines
+
+- **Don't over-generate.** 10-20 concepts is enough for a solid foundation. The learner can always add more later. Breadth over exhaustiveness.
+- **Name concepts clearly.** Use descriptive titles that make sense in isolation: "Cohen's Kappa" not "Metric 3", "Retrieval-Augmented Generation" not "Advanced Technique".
+- **Cluster names should be meaningful.** "Statistical Foundations" not "Cluster 1".
+- **Respect the learner's level.** If someone says "I'm new to this", start with more foundational concepts. If they say "I know the basics, I want the advanced stuff", skip introductory material.
+- **Stub notes should be useful, not empty.** The core claim should be accurate enough that the agent can teach from it in Pass 1. It's OK to use training knowledge for stubs — they'll be enriched with sources later.
+
+---
+
+## Teach-from-Source — Learn from a PDF, URL, or Paste
+
+When the learner provides a specific source (PDF, URL, or pasted text) rather than a topic or concept name, the skill extracts concepts and teaches them in a single session flow.
+
+### When it triggers
+
+- The learner provides a file path to a PDF or text file
+- The learner provides a URL to an article, paper, or documentation page
+- The learner pastes a block of text they want to understand
+- The learner says something like "teach me this paper", "explain this article", "help me understand this"
+
+### What it does
+
+1. **Extract the source content:**
+   - PDF: read the full text (use available PDF reading tools)
+   - URL: fetch and extract the main content (use WebFetch or similar)
+   - Paste: use the provided text directly
+
+2. **Identify 3-7 key concepts** from the source:
+   - Each concept should be a distinct, teachable idea
+   - Order them by dependency (foundational concepts first)
+   - For academic papers: align with the paper's structure (background concepts, the main contribution, methodology, key findings)
+   - For articles/docs: extract the main ideas and their building blocks
+
+3. **Create a temporary session plan** (announced to the learner, not necessarily written to a file):
+   - "I found [N] key concepts in this source: [list]. I'll teach them in order, starting with [first concept]."
+   - Ask: "Want me to cover all of them, or focus on specific ones?"
+
+4. **For each selected concept, run a condensed session:**
+   - **Explain** using the appropriate archetype (Phase 1 logic), drawing on the source text as primary material
+   - **Build an interactive** if the concept warrants it (Phase 1b logic)
+   - **Comprehension check** (Phase 2 logic, one check per concept)
+   - Skip Phase 3 (application) and Phase 3b (connection mapping) for speed — this is a first-encounter mode, not deep study
+   - Concepts that deserve deeper treatment get flagged for the full session flow later
+
+5. **After the session, offer to persist:**
+   - "Want me to add these concepts to your learning roadmap for deeper study later?"
+   - If yes: create concept notes in `concepts/`, add them to the roadmap (or create one if it doesn't exist — chain into Bootstrapper), and schedule recall
+   - If no: just write a session protocol and move on
+
+### Guidelines
+
+- **Teach, don't summarize.** The learner can read the source themselves. The value is in explanation, context, prerequisite filling, and comprehension checking.
+- **Stay faithful to the source.** When teaching from a specific paper or article, the explanations should reflect what that source actually says, not generic knowledge about the topic.
+- **Handle prerequisites.** If the source assumes knowledge the learner doesn't have (detected via prerequisite probing), explain those first — even if they're not in the source itself.
+- **Respect scope.** A 3-page blog post yields 2-3 concepts. A 30-page paper yields 5-7. Don't force more concepts than the source supports.
 
 ---
 
@@ -102,11 +198,12 @@ One of:
 
 ### Phase 0: Orient (1 min)
 
-1. Read the learning roadmap to find the next unchecked concept(s)
-2. Determine which pass we're in (1 = Overview, 2 = Working Understanding, 3 = Fluency)
-3. **Detect or recall domain mode** (see Domain Modes section). On the first session, infer from content or ask. On subsequent sessions, read the stored preference.
-4. Tell the learner: "We're in **Pass X**, Cluster Y: *cluster name*. Next up: *concept name*."
-5. If resuming, briefly recall what was covered last session
+1. **Check for bootstrapper or teach-from-source triggers** (see sections above). If triggered, follow that flow instead of the standard session flow.
+2. Read the learning roadmap to find the next unchecked concept(s)
+3. Determine which pass we're in (1 = Overview, 2 = Working Understanding, 3 = Fluency)
+4. **Detect or recall domain mode** (see Domain Modes section). On the first session, infer from content or ask. On subsequent sessions, read the stored preference.
+5. Tell the learner: "We're in **Pass X**, Cluster Y: *cluster name*. Next up: *concept name*."
+6. If resuming, briefly recall what was covered last session
 
 ### Phase 0.5: Spaced Recall Check (2-5 min)
 
