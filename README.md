@@ -229,4 +229,4 @@ MIT. See [LICENSE](LICENSE).
 
 ## Credits
 
-Developed by [Jonas Gwozdz](https://github.com/jonasgwozdz) at the [WSE Research Group](https://github.com/wse-research), HTWK Leipzig. Born from the need to actually remember what you read.
+Developed by [Jonas Gwozdz](https://github.com/jonasgwozdz) at the [WSE Research Group](https://github.com/wse-research), HTWK Leipzig, with support from [Netresearch DTT GmbH](https://www.netresearch.de). Born from the need to actually remember what you read.
