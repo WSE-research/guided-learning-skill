@@ -29,11 +29,11 @@ The spiral curriculum means you visit each concept up to three times:
 
 | Mode | Best for | Comprehension checks sound like... |
 |------|----------|-----------------------------------|
-| `research` (default) | PhD students, postdocs, researchers | "Write the Related Work sentence", "Reviewer 2 says..." |
+| `research` | PhD students, postdocs, researchers | "Write the Related Work sentence", "Reviewer 2 says..." |
 | `professional` | Industry professionals, L&D, consultants | "Brief your manager", "Write the decision memo" |
 | `self-study` | Independent learners, career changers | "Explain at dinner", "Write a blog post opener" |
 
-Set `domain_mode` in the Configuration section of `SKILL.md`.
+The skill detects the right mode automatically from your concept notes and roadmap content. If it's ambiguous, it asks once during the first session. No configuration needed.
 
 ## Prerequisites
 

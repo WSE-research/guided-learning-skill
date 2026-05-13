@@ -49,16 +49,19 @@ skill_logs_dir: SKILLS/guided-learning/logs/
 css_file: learning/interactives/interactive.css
 build_script: learning/interactives/build.sh
 
-# Domain mode — controls the framing of comprehension checks, connection prompts,
-# and application exercises. Does NOT change the core explanation approach.
-domain_mode: research  # Options: research, professional, self-study
 ```
 
 ## Domain Modes
 
 The skill supports three domain modes that adapt session framing — comprehension checks, connection mapping prompts, and application context — to the learner's situation. The core explanation approach (Phase 1) stays the same across all modes; what changes is the *lens* through which the learner is asked to demonstrate and apply understanding.
 
-Set `domain_mode` in the configuration above. The default is `research`.
+**Mode detection (Phase 0):** Do NOT require manual configuration. Instead, detect the mode automatically during the first session:
+
+1. **Read the concept notes and roadmap.** Academic papers, citations, and research questions signal `research`. Corporate/industry content, project documentation, and process descriptions signal `professional`. Mixed or personal content signals `self-study`.
+2. **If ambiguous, ask the learner once** at the start of the first session: "Your concepts look like [X] — should I frame sessions for academic writing, workplace application, or personal learning?" One question, then remember the answer for all future sessions.
+3. **Store the choice** in the recall queue file header or a comment in the roadmap, so subsequent sessions pick it up without re-asking.
+
+The learner can override the mode at any time by saying "switch to professional mode" or similar.
 
 ### research (default)
 
@@ -101,8 +104,9 @@ One of:
 
 1. Read the learning roadmap to find the next unchecked concept(s)
 2. Determine which pass we're in (1 = Overview, 2 = Working Understanding, 3 = Fluency)
-3. Tell the learner: "We're in **Pass X**, Cluster Y: *cluster name*. Next up: *concept name*."
-4. If resuming, briefly recall what was covered last session
+3. **Detect or recall domain mode** (see Domain Modes section). On the first session, infer from content or ask. On subsequent sessions, read the stored preference.
+4. Tell the learner: "We're in **Pass X**, Cluster Y: *cluster name*. Next up: *concept name*."
+5. If resuming, briefly recall what was covered last session
 
 ### Phase 0.5: Spaced Recall Check (2-5 min)
 
